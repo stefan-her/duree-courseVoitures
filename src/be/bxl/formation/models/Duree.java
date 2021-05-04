@@ -1,15 +1,19 @@
 package be.bxl.formation.models;
 
-
+import java.util.HashMap;
 
 public class Duree {
 
-    private int seconds;
+    private int totSecondsOrg;
+    private int totSecondsMod;
 
-    public Duree(int nbSecondes) {
-        if(nbSecondes < 0) {
+    public Duree(int sec) {
+        if(sec < 0) {
             throw new IllegalArgumentException("Pas de nombre négartif");
         }
+
+        this.totSecondsOrg = sec;
+        this.totSecondsMod = this.totSecondsOrg;
     }
 
     public Duree(int jour, int heure, int minute, int seconde) {
@@ -17,35 +21,42 @@ public class Duree {
             throw new IllegalArgumentException("Pas de nombre négartif");
         }
 
-        this.seconds = (jour * 86400) + (heure * 3600) + (minute * 60) + seconde;
+        int sec = (jour * 86400) + (heure * 3600) + (minute * 60) + seconde;
+        this.totSecondsOrg = sec;
+        this.totSecondsMod = this.totSecondsOrg;
     }
 
-    private void convertSecondToHumain(int nbSec) {
-        int sec = this.seconds % 60;
-        int min = (this.seconds / 60) % 60;
-        int hours = (this.seconds / 3600) % 60;
-        int days = this.seconds / 86400;
-
+    private HashMap convertSecondToHumain(int sec) {
+        HashMap<String, Integer> dhms = new HashMap<String, Integer>();
+        dhms.put("sec", sec % 60);
+        dhms.put("min", (sec / 60) % 60);
+        dhms.put("hours", (sec / 3600) % 24);
+        dhms.put("days", sec / 86400);
+        return dhms;
     }
 
-    public void getDuree() {
+    public String getDuree() {
+        HashMap dhms = this.convertSecondToHumain(this.totSecondsMod);
         String textPattern = " ->  %s jours %s heures %s minutes %s secondes";
-        String text = String.format(textPattern, this.days, this.hours, this.minutes, this.seconds);
-        System.out.println(text);
+        String text = String.format(textPattern, dhms.get("days"), dhms.get("hours"), dhms.get("min"), dhms.get("sec"));
+        return text;
     }
 
     public int getTotalSeconde() {
-        return this.seconds;
+        return this.totSecondsMod;
     }
 
     //Prend un objet de type Duree en paramètre et soustrait cette dernière à notre objet.
-    public void subDuree() {
-
+    public void subDuree(Duree obj) {
+        int tmp = this.totSecondsOrg - obj.totSecondsOrg;
+        if(tmp < 0) {
+            throw new IllegalArgumentException("pas de temps négatif");
+        }
+        this.totSecondsMod = tmp;
     }
 
     //Même principe, mais la Duree reçue est ajoutée à notre objet.
-    public void addDuree() {
-
+    public void addDuree(Duree obj) {
+        this.totSecondsMod = this.totSecondsOrg + obj.totSecondsOrg;
     }
-
 }
