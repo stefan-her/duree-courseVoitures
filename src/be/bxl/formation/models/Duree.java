@@ -4,44 +4,28 @@ package be.bxl.formation.models;
 
 public class Duree {
 
-    private int days;
-    private int hours;
-    private int minutes;
     private int seconds;
 
     public Duree(int nbSecondes) {
-//        if(nbSecondes < 0) {
-//            throw new PatternSyntaxException("Pas de nombre négartif");
-//        }
-        this.convertSecondToHumain(nbSecondes);
+        if(nbSecondes < 0) {
+            throw new IllegalArgumentException("Pas de nombre négartif");
+        }
     }
 
     public Duree(int jour, int heure, int minute, int seconde) {
-//        if(jour < 0 || heure < 0 || minute < 0 || seconde < 0) {
-//            throw new PatternSyntaxException("Pas de nombre négartif");
-//        }
+        if(jour < 0 || heure < 0 || heure > 24 || minute < 0 || minute > 60|| seconde < 0 || seconde > 60) {
+            throw new IllegalArgumentException("Pas de nombre négartif");
+        }
 
-        this.days = jour;
-        this.hours = heure;
-        this.minutes = minute;
-        this.seconds = seconde;
+        this.seconds = (jour * 86400) + (heure * 3600) + (minute * 60) + seconde;
     }
 
     private void convertSecondToHumain(int nbSec) {
-        int totalSec = nbSec;
+        int sec = this.seconds % 60;
+        int min = (this.seconds / 60) % 60;
+        int hours = (this.seconds / 3600) % 60;
+        int days = this.seconds / 86400;
 
-        this.seconds = nbSec % 60;
-        totalSec -= this.seconds;
-
-        int minutes = nbSec / 60;
-        this.minutes = nbSec % 60;
-        totalSec -= this.minutes *60;
-
-        int hours = minutes / 60;
-        this.hours = minutes % 60;
-        totalSec -= this.hours *60 *60;
-
-        this.days = hours / 24;
     }
 
     public void getDuree() {
@@ -49,9 +33,9 @@ public class Duree {
         String text = String.format(textPattern, this.days, this.hours, this.minutes, this.seconds);
         System.out.println(text);
     }
-/*
-    public int getTotalSeconde() {
 
+    public int getTotalSeconde() {
+        return this.seconds;
     }
 
     //Prend un objet de type Duree en paramètre et soustrait cette dernière à notre objet.
@@ -64,5 +48,4 @@ public class Duree {
 
     }
 
- */
 }
